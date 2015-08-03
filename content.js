@@ -233,5 +233,5 @@ function updatePGPA(courseCredits,grade,course)
   gg.transcript.points = projectedPoints;
   gg.transcript.gpaCreds =  projectedGPACr;
   
-  document.querySelector(".gg-gpa #pgpa").innerText = (gg.transcript.points/gg.transcript.gpaCreds).toFixed(2);
+  document.querySelector(".gg-gpa #pgpa").innerText =""+ (gg.transcript.points/gg.transcript.gpaCreds).toFixed(3).slice(0,4);
 }
