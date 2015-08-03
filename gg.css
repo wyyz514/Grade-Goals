@@ -51,12 +51,13 @@
   height:2em;
   width:2em;
   line-height:2em;
+  padding:5px;
   border:2px solid #fff;
   color:#fff;
   font-weight:bold;
   font-family:"Arial Black";
   text-align:center;
-  font-size:1em;
+  font-size:0.6em;
 }
 
 .gg-header #triangle
