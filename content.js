@@ -207,5 +207,51 @@ gg.parseTranscript = (function(){
 
 function updatePGPA(courseCredits,grade,course)
 {
+  var courseCredits = parseFloat(courseCredits);
+  var grade = parseFloat(grade);
+  gg.transcript.points = parseFloat(gg.transcript.points);
+  gg.transcript.gpaCreds = parseFloat(gg.transcript.gpaCreds);
+  var pGPA = Number();
+  var pGPAContainer = document.querySelector(".gg-gpa #pgpa");
+  //when updating pGPA, want to subtract previous contribution
+  //to points and add new contribution
+  //if '--' is passed just subtract previous contribution
+  var projectedPoints = gg.transcript.points.toFixed(2);
+  var projectedGPACreds = gg.transcript.gpaCreds;
+  //hash for lookup of selected grades
+  if(!gg.projectedGrades)
+    gg.projectedGrades = {};
+  //initialize the course if a grade has not been assigneD //prior
+  if(!gg.projectedGrades[course])
+  {
+    gg.projectedGrades[course] = {};
+    gg.projectedGrades[course].gradeValue = null;
+    gg.projectedGrades[course].credits = courseCredits;
+  }
+  //if this value is received, remove the previous courses grade contribution from the total
+  if(isNaN(grade))
+  {
+    var courseContribution = gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits;
+    gg.transcript.points -= courseContribution;
+    gg.transcript.gpaCreds -= gg.projectedGrades[course].credits;
+    pGPA = ((gg.transcript.points/gg.transcript.gpaCreds) - 0.01).toFixed(2) ;//subtracting 0.01 b/c js rounds up but that is not wanted since McGill rounds down
+    pGPAContainer.innerHTML = pGPA;
+    gg.projectedGrades[course].gradeValue = grade;
+  }
   
+  else
+  {
+    if(gg.projectedGrades[course].gradeValue)
+    {
+      //if the course had a previous grade then remove that contribution
+      var courseContribution = gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits;
+    gg.transcript.points -= courseContribution;
+    gg.transcript.gpaCreds -= gg.projectedGrades[course].credits;
+    }
+    gg.projectedGrades[course].gradeValue = grade;
+    gg.transcript.points += parseFloat(gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits);
+    gg.transcript.gpaCreds += gg.projectedGrades[course].credits;
+    pGPA = ((gg.transcript.points/gg.transcript.gpaCreds) - 0.01).toFixed(2); //subtracting 0.01 b/c js rounds up but that is not wanted since McGill rounds down
+    pGPAContainer.innerHTML = pGPA;
+  }
 }
