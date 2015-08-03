@@ -11,6 +11,15 @@
   position:fixed;
   top:10px;
   left:75%;
+  -webkit-transition:all 0.5s ease-in-out;
+}
+
+#gg.minimize
+{
+  height:3em;
+  width:3em;
+  left:97%;
+  top:0;
 }
 
 .gg-header
@@ -19,10 +28,13 @@
   width:100%;
   border:1px solid #d32f2f;
   background-color:#d32f2f;
+  overflow:hidden;
 }
 
 .gg-header>div
 {
+  left:0;
+  position:relative;
   float:left;
 }
 
