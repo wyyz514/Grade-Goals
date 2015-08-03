@@ -23,7 +23,6 @@ gg.parseTranscript = (function(){
 
         trParent.setAttribute("gg-marker","");
         gg.startMarker = trParent;
-        console.log(trParent);
         var jumbledInfo = infoContainer.innerText;
         var splitInfo = jumbledInfo.match(/[a-z A-Z:0-9\.]+/g);
         //some hardcoding 
@@ -38,7 +37,8 @@ gg.parseTranscript = (function(){
         resolve();
     });
     return promise;
-})().then(function(){
+})()
+.then(function(){
     var promise = new Promise(function(resolve,reject){
         var currRow = gg.startMarker;
         while(currRow.nextElementSibling !== gg.endMarker)
@@ -58,7 +58,8 @@ gg.parseTranscript = (function(){
         resolve();
     });
     return promise;
-}).then(function(){
+})
+.then(function(){
     var promise = new Promise(function(resolve,reject){
         //find all the tags that have been given a semester attribute
         var semesters = document.querySelectorAll("tr[gg-semester]");
@@ -66,7 +67,7 @@ gg.parseTranscript = (function(){
         for(var index = 0; index < semesters.length; index++){
             //get the courses and fill the respective semester hash
             var currentSem = semesters[index];
-            (function(curr,sem){
+            (function(curr,courses){
                 var original = curr;
                 while(curr.nextElementSibling
                   && !curr.nextElementSibling.hasAttribute("gg-semester"))
@@ -82,7 +83,7 @@ gg.parseTranscript = (function(){
                         course.section = row.pop();
                         course.courseCode = row.pop().replace("_"," ");
                         course.semester = original.getAttribute("gg-semester").replace("_"," ");
-                        sem.push(course);
+                        courses.push(course);
                     }
                     curr = curr.nextElementSibling;
                 }
@@ -92,58 +93,71 @@ gg.parseTranscript = (function(){
         resolve();
     })
     return promise;
-}).then(function(){
+})
+.then(function(){
+  var promise = new Promise(function(resolve,reject){
+    var ggContainer = document.createElement("div");
+    ggContainer.setAttribute("id","gg");
+    document.body.appendChild(ggContainer);
     //I think this is pretty bad but couldn't figure out templating because I suck
     chrome.runtime.sendMessage({message:"LOAD"});
-});
-//should add types to messages incase I need to store data in localStorage
-chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
-  var ggContainer = document.createElement("div");
+    //should add types to messages incase I need to store data in localStorage
+    chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
+      if(msg.message !== "")
+        resolve(msg.message);
+    });
+  });
+  return promise;
+}).then(function(msg){
+  //append the row container to the GUI and load the rows after filling in the class information
+  var ggContainer = document.querySelector("div#gg");
+  ggContainer.innerHTML = msg;
   var rowTemplate =  
-    "<div class=\"gg-divider\"></div>"
-    +"<div class=\"gg-grade\">"
-      +"<select class=\"gg-select\">"
-        +"<option>&#45;&#45;</option>"
-        +"<option>A</option>"
-        +"<option>A-</option>"
-        +"<option>B+</option>"
-        +"<option>B</option>"
-        +"<option>B-</option>"
-        +"<option>C+</option>"
-        +"<option>C</option>"
-        +"<option>D</option>"
-        +"<option>F</option>"
-      +"</select>"
-    +"</div>"
-  ggContainer.setAttribute("id","gg");
-  ggContainer.innerHTML = msg.message;
-  document.body.appendChild(ggContainer);
+        "<div class=\"gg-divider\"></div>"
+        +"<div class=\"gg-grade\">"
+          +"<select class=\"gg-select\">"
+            +"<option value=\"--\">&#45;&#45;</option>"
+            +"<option value=\"4.0\">A</option>"
+            +"<option value=\"3.7\">A-</option>"
+            +"<option value=\"3.3\">B+</option>"
+            +"<option value=\"3.0\">B</option>"
+            +"<option value=\"2.7\">B-</option>"
+            +"<option value=\"2.3\">C+</option>"
+            +"<option value=\"2.0\">C</option>"
+            +"<option value=\"1.0\">D</option>"
+            +"<option value=\"0\">F</option>"
+          +"</select>"
+        +"</div>";
   //create row, set class info values, set credits attribute on .gg-class-info
   for(var index = 0; index < gg.courses.length; index++)
   {
     var row = document.createElement("div");
     row.setAttribute("class","gg-row");
     row.innerHTML = rowTemplate;
-    ggContainer.firstElementChild.appendChild(row);
-    
+    if(!ggContainer.querySelector("div.gg-row-container"))
+    {
+      ggContainer.innerHTML = msg;
+    }
+    ggContainer.querySelector("div.gg-row-container").appendChild(row);
+
     var className = document.createElement("div");
     className.setAttribute("class","gg-class-name");
     className.innerHTML = gg.courses[index].name;
-    
+
     var classCode = document.createElement("div");
     classCode.setAttribute("class","gg-class-code");
     classCode.innerHTML = gg.courses[index].courseCode;
-    
+
     var classSem = document.createElement("div");
     classSem.setAttribute("class","gg-class-sem");
     classSem.innerHTML = gg.courses[index].semester;
-    
+
     var classInfo = document.createElement("div");
     classInfo.setAttribute("class","gg-class-info");
     classInfo.appendChild(className);
     classInfo.appendChild(classCode);
     classInfo.appendChild(classSem);
-    
+
     row.setAttribute("credits",gg.courses[index].credits);
     var divider = row.querySelector("div.gg-divider");
     row.insertBefore(classInfo,divider);
