@@ -59,37 +59,93 @@ gg.parseTranscript = (function(){
     });
     return promise;
 }).then(function(){
-    //courses based on semester will be stored here
-    gg.semesters = {};
-    //find all the tags that have been given a semester attribute
-    var semesters = document.querySelectorAll("tr[gg-semester]");
-    for(var index = 0; index < semesters.length; index++){
-        //get the courses and fill the respective semester hash
-        var currentSem = semesters[index];
-        var sem = gg.semesters[currentSem.getAttribute("gg-semester")] = [];
-        var courses = [];
-        (function(curr,sem){
-            var original = curr;
-            while(curr.nextElementSibling
-              && !curr.nextElementSibling.hasAttribute("gg-semester"))
-            {
-                var row = curr;
-                var course = {};
-                if(row.innerText.startsWith("RW"))
+    var promise = new Promise(function(resolve,reject){
+        //find all the tags that have been given a semester attribute
+        var semesters = document.querySelectorAll("tr[gg-semester]");
+        gg.courses = [];
+        for(var index = 0; index < semesters.length; index++){
+            //get the courses and fill the respective semester hash
+            var currentSem = semesters[index];
+            (function(curr,sem){
+                var original = curr;
+                while(curr.nextElementSibling
+                  && !curr.nextElementSibling.hasAttribute("gg-semester"))
                 {
-                    row = row.innerText.replace(/ /g,"_").trim(); //replace spaces in names with underscore
-                    row = row.split(/\s/); //split by spaces and remove RW
-                    course.credits = row.pop();
-                    course.name = row.pop().replace(/[_]/g," ");
-                    course.section = row.pop();
-                    course.courseCode = row.pop().replace("_"," ");
-                    course.semester = original.getAttribute("gg-semester");
-                    sem.push(course);
+                    var row = curr;
+                    var course = {};
+                    if(row.innerText.startsWith("RW"))
+                    {
+                        row = row.innerText.replace(/ /g,"_").trim(); //replace spaces in names with underscore
+                        row = row.split(/\s/); //split by spaces and remove RW
+                        course.credits = row.pop();
+                        course.name = row.pop().replace(/[_]/g," ");
+                        course.section = row.pop();
+                        course.courseCode = row.pop().replace("_"," ");
+                        course.semester = original.getAttribute("gg-semester").replace("_"," ");
+                        sem.push(course);
+                    }
+                    curr = curr.nextElementSibling;
                 }
-                curr = curr.nextElementSibling;
-            }
-        })(currentSem,sem)
-        
-    }
-    console.log(gg.semesters);
+            })(currentSem,gg.courses)
+
+        }
+        resolve();
+    })
+    return promise;
+}).then(function(){
+    //I think this is pretty bad but couldn't figure out templating because I suck
+    chrome.runtime.sendMessage({message:"LOAD"});
+});
+//should add types to messages incase I need to store data in localStorage
+chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
+  var ggContainer = document.createElement("div");
+  var rowTemplate =  
+    "<div class=\"gg-divider\"></div>"
+    +"<div class=\"gg-grade\">"
+      +"<select class=\"gg-select\">"
+        +"<option>&#45;&#45;</option>"
+        +"<option>A</option>"
+        +"<option>A-</option>"
+        +"<option>B+</option>"
+        +"<option>B</option>"
+        +"<option>B-</option>"
+        +"<option>C+</option>"
+        +"<option>C</option>"
+        +"<option>D</option>"
+        +"<option>F</option>"
+      +"</select>"
+    +"</div>"
+  ggContainer.setAttribute("id","gg");
+  ggContainer.innerHTML = msg.message;
+  document.body.appendChild(ggContainer);
+  //create row, set class info values, set credits attribute on .gg-class-info
+  for(var index = 0; index < gg.courses.length; index++)
+  {
+    var row = document.createElement("div");
+    row.setAttribute("class","gg-row");
+    row.innerHTML = rowTemplate;
+    ggContainer.firstElementChild.appendChild(row);
+    
+    var className = document.createElement("div");
+    className.setAttribute("class","gg-class-name");
+    className.innerHTML = gg.courses[index].name;
+    
+    var classCode = document.createElement("div");
+    classCode.setAttribute("class","gg-class-code");
+    classCode.innerHTML = gg.courses[index].courseCode;
+    
+    var classSem = document.createElement("div");
+    classSem.setAttribute("class","gg-class-sem");
+    classSem.innerHTML = gg.courses[index].semester;
+    
+    var classInfo = document.createElement("div");
+    classInfo.setAttribute("class","gg-class-info");
+    classInfo.appendChild(className);
+    classInfo.appendChild(classCode);
+    classInfo.appendChild(classSem);
+    
+    row.setAttribute("credits",gg.courses[index].credits);
+    var divider = row.querySelector("div.gg-divider");
+    row.insertBefore(classInfo,divider);
+  }
 });
