@@ -81,7 +81,7 @@
   height:100%;
 }
 
-.gg-gpa #gpa-title
+.gg-gpa .gpa-title
 {
   height:1em;
   width:100%;
@@ -91,7 +91,7 @@
   font-family:"Source Sans Pro"
 }
 
-.gg-gpa #gpa
+.gg-gpa #cgpa, .gg-gpa #pgpa
 {
   height:2em;
   width:100%;
