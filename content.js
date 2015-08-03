@@ -134,6 +134,7 @@ gg.parseTranscript = (function(){
     var row = document.createElement("div");
     row.setAttribute("class","gg-row");
     row.innerHTML = rowTemplate;
+    
     if(!ggContainer.querySelector("div.gg-row-container"))
     {
       ggContainer.innerHTML = msg;
@@ -164,6 +165,19 @@ gg.parseTranscript = (function(){
     
     var logo = document.querySelector(".gg-logo #bordr");
   }
+  //add listener to select tags
+  var _selectEls = document.querySelectorAll(".gg-select");
+  var selectEls = Array.prototype.slice.call(_selectEls);
+  console.log(selectEls.length);
+  for(var index = 0; index < selectEls.length; index++)
+  {
+    (function(i){
+      selectEls[i].addEventListener("change",function(e){
+        console.log(e.target.value);
+      });
+    })(index);
+  }
+  
   logo.addEventListener("click",function(e){
     var el = e.target.parentElement;
     var ggContainer = document.querySelector("div#gg");
