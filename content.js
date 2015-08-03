@@ -161,5 +161,34 @@ gg.parseTranscript = (function(){
     row.setAttribute("credits",gg.courses[index].credits);
     var divider = row.querySelector("div.gg-divider");
     row.insertBefore(classInfo,divider);
+    
+    var logo = document.querySelector(".gg-logo #bordr");
   }
+  logo.addEventListener("click",function(e){
+    var el = e.target.parentElement;
+    var ggContainer = document.querySelector("div#gg");
+    var ggRowContainer = document.querySelector("div.gg-row-container");
+    if(!gg.minimized)
+    {
+      ggContainer.classList.add("minimize");
+      while(el.nextElementSibling)
+      {
+        el.nextElementSibling.classList.add("minimize");
+        el = el.nextElementSibling;
+      }
+      ggRowContainer.style.visibility = "hidden";
+      gg.minimized = true;
+    }
+    else
+    {
+      ggContainer.classList.remove("minimize");
+      while(el.nextElementSibling)
+      {
+        el.nextElementSibling.classList.remove("minimize");
+        el = el.nextElementSibling;
+      }
+      ggRowContainer.style.visibility = "visible";
+      gg.minimized = false;
+    }
+  });
 });
