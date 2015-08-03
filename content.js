@@ -168,8 +168,10 @@ gg.parseTranscript = (function(){
   {
     (function(i){
       selectEls[i].addEventListener("change",function(e){
-        var credits = e.target.parentElement.parentElement.getAttribute("credits");
-        //updatePGPA(credits,e.target.value);
+        var grandParent = e.target.parentElement.parentElement;
+        var credits = grandParent.getAttribute("credits");
+        var courseName = grandParent.querySelector(".gg-class-info").firstElementChild.innerText;
+        updatePGPA(credits,e.target.value,courseName);
       });
     })(index);
   }
@@ -202,3 +204,34 @@ gg.parseTranscript = (function(){
     }
   });
 });
+
+function updatePGPA(courseCredits,grade,course)
+{
+  var projectedPoints = parseFloat(gg.transcript.points);
+  var projectedGPACr = parseFloat(gg.transcript.gpaCreds);
+  
+  if(!gg.projectedGrades)
+    gg.projectedGrades = {};
+  
+  if(!gg.projectedGrades[course])
+    gg.projectedGrades[course] = {};
+  
+  if(grade == "--")
+  {
+    projectedPoints -= (gg.projectedGrades[course].credits * gg.projectedGrades[course].gradeValue);
+    projectedGPACr -= gg.projectedGrades[course].credits;
+  }
+  else
+  {
+    gg.projectedGrades[course].credits = parseFloat(courseCredits);
+    gg.projectedGrades[course].gradeValue = parseFloat(grade);
+  
+    projectedPoints += (gg.projectedGrades[course].credits * gg.projectedGrades[course].gradeValue);
+    projectedGPACr += gg.projectedGrades[course].credits;
+  }
+   
+  gg.transcript.points = projectedPoints;
+  gg.transcript.gpaCreds =  projectedGPACr;
+  
+  document.querySelector(".gg-gpa #pgpa").innerText = (gg.transcript.points/gg.transcript.gpaCreds).toFixed(2);
+}
