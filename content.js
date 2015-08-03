@@ -112,6 +112,7 @@ gg.parseTranscript = (function(){
   //append the row container to the GUI and load the rows after filling in the class information
   var ggContainer = document.querySelector("div#gg");
   ggContainer.innerHTML = msg;
+  ggContainer.querySelector(".gg-gpa #cgpa").innerHTML = gg.transcript.cumGPA;
   var rowTemplate =  
         "<div class=\"gg-divider\"></div>"
         +"<div class=\"gg-grade\">"
@@ -134,11 +135,6 @@ gg.parseTranscript = (function(){
     var row = document.createElement("div");
     row.setAttribute("class","gg-row");
     row.innerHTML = rowTemplate;
-    
-    if(!ggContainer.querySelector("div.gg-row-container"))
-    {
-      ggContainer.innerHTML = msg;
-    }
     ggContainer.querySelector("div.gg-row-container").appendChild(row);
 
     var className = document.createElement("div");
@@ -168,12 +164,12 @@ gg.parseTranscript = (function(){
   //add listener to select tags
   var _selectEls = document.querySelectorAll(".gg-select");
   var selectEls = Array.prototype.slice.call(_selectEls);
-  console.log(selectEls.length);
   for(var index = 0; index < selectEls.length; index++)
   {
     (function(i){
       selectEls[i].addEventListener("change",function(e){
-        console.log(e.target.value);
+        var credits = e.target.parentElement.parentElement.getAttribute("credits");
+        //updatePGPA(credits,e.target.value);
       });
     })(index);
   }
