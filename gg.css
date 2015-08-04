@@ -66,6 +66,12 @@
   border-right:1.5em solid #b71c1c;
   border-top:1.5em solid transparent;
   border-bottom:1.5em solid transparent;
+  visibility:visible;
+}
+
+.gg-header #triangle.minimize
+{
+  visibility:hidden;
 }
 
 .gg-header #ggpa
@@ -73,6 +79,12 @@
   width:7.5em;
   height:100%;
   background-color:#b71c1c;
+  visibility:visible;
+}
+
+.gg-header #ggpa.minimize
+{
+  visibility:hidden;
 }
 
 .gg-gpa
@@ -114,6 +126,12 @@
   flex-direction:column;
   font-family:"Source Sans Pro";
   overflow:auto;
+  visibility:visible;
+}
+
+.gg-row-container.minimize
+{
+  visibility:hidden;
 }
 
 .gg-row
