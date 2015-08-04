@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     var promise = new Promise(function(resolve,reject){
       var resp = "";
       var xhr = new XMLHttpRequest();
-      xhr.open("GET",chrome.extension.getURL("gg.html"),true); 
+      xhr.open("GET",chrome.extension.getURL("partial/gg.html"),true); 
       xhr.onreadystatechange = function(){
         if(xhr.readyState == 4)
         {
