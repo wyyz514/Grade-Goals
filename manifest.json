@@ -9,14 +9,14 @@
     },
     "background":{
         "persistent":false,
-        "scripts":["js/background.js"]
+        "scripts":["background.js"]
     },
     "permissions":["tabs"],
     "content_scripts":[{
         "matches":["https://horizon.mcgill.ca/pban1/bzsktran.P_Display_Form?user_type=S&tran_type=V"],
-        "css":["css/gg.css"],
-        "js":["js/gg.js","js/content.js"],
+        "css":["gg.css"],
+        "js":["gg.js","content.js"],
         "run_at":"document_end"
     }],
-    "web_accessible_resources":["font/SourceSansPro-Regular.otf"]
+    "web_accessible_resources":["SourceSansPro-Regular.otf"]
 }
