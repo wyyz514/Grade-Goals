@@ -1,6 +1,6 @@
 @font-face
 {
-  src:url('chrome-extension://__MSG_@@extension_id__/SourceSansPro-Regular.otf');
+  src:url('chrome-extension://__MSG_@@extension_id__/font/SourceSansPro-Regular.otf');
   font-family:"Source Sans Pro";
 }
 
