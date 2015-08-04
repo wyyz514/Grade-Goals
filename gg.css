@@ -44,7 +44,6 @@
   width:12em;
   -webkit-box-sizing:border-box;
   padding:5px;
-  cursor:pointer;
 }
 
 .gg-logo #bordr
@@ -59,6 +58,7 @@
   font-family:"Arial Black";
   text-align:center;
   font-size:0.6em;
+  cursor:pointer;
 }
 
 .gg-header #triangle
