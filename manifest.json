@@ -15,7 +15,7 @@
     "content_scripts":[{
         "matches":["https://horizon.mcgill.ca/pban1/bzsktran.P_Display_Form?user_type=S&tran_type=V"],
         "css":["gg.css"],
-        "js":["content.js"],
+        "js":["gg.js","content.js"],
         "run_at":"document_end"
     }],
     "web_accessible_resources":["SourceSansPro-Regular.otf"]
