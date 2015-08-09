@@ -43,6 +43,7 @@ gg.parseTranscript = function(){
 gg.setSemesters = function(){
     var promise = new Promise(function(resolve,reject){
       var currRow = gg.startMarker;
+      var foundSemester = false;
       while(currRow.nextElementSibling !== gg.endMarker)
       {
           if(currRow.innerText.match(/winter/i) 
@@ -54,6 +55,7 @@ gg.setSemesters = function(){
               var _sem = currRow.innerText.split(/\s/); 
               var sem = _sem.join("_");
               currRow.setAttribute("gg-semester",sem);
+              currRow.classList.add("gg-sem");
           }
           currRow = currRow.nextElementSibling;
       }
@@ -66,6 +68,11 @@ gg.parseCourses = function(){
   var promise = new Promise(function(resolve,reject){
     //find all the tags that have been given a gg-semester attribute
     var semesters = document.querySelectorAll("tr[gg-semester]");
+    if(!semesters)
+    {
+      alert("Seems like you don't have any courses coming up. This extension won't help you.");
+      return;
+    }
     gg.courses = [];
     for(var index = 0; index < semesters.length; index++){
         //get the courses and fill the courses array.
@@ -120,6 +127,7 @@ gg.populateWithCourses = function(msg){
   //append the row container to the GUI and load the rows after filling in the course information
   var ggContainer = document.querySelector("div#gg");
   ggContainer.innerHTML = msg;
+  //initialize both types of GPA to current cGPA value
   ggContainer.querySelector(".gg-gpa #cgpa").innerHTML = gg.transcript.cumGPA;
   ggContainer.querySelector(".gg-gpa #pgpa").innerHTML = gg.transcript.cumGPA;
   var rowTemplate =  
@@ -237,19 +245,22 @@ gg.updatePGPA = function(courseCredits,grade,course)
     gg.projectedGrades[course].gradeValue = null;
     gg.projectedGrades[course].credits = courseCredits;
   }
-  //if this value is received, remove the previous courses grade contribution from the total
+  //if this value '--' is received, remove the previous courses grade contribution from the total
   if(isNaN(grade))
   {
+    console.log("[*Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
     var courseContribution = gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits;
     gg.transcript.points -= courseContribution;
     gg.transcript.gpaCreds -= gg.projectedGrades[course].credits;
     pGPA = ((gg.transcript.points/gg.transcript.gpaCreds) - 0.01).toFixed(2) ;//subtracting 0.01 b/c js rounds up but that is not wanted since McGill rounds down
     pGPAContainer.innerHTML = pGPA;
     gg.projectedGrades[course].gradeValue = grade;
+    console.log("[*New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
   }
   
   else
   {
+    console.log("[Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
     if(gg.projectedGrades[course].gradeValue)
     {
       //if the course had a previous grade then remove that contribution
@@ -262,5 +273,6 @@ gg.updatePGPA = function(courseCredits,grade,course)
     gg.transcript.gpaCreds += gg.projectedGrades[course].credits;
     pGPA = ((gg.transcript.points/gg.transcript.gpaCreds) - 0.01).toFixed(2); //subtracting 0.01 b/c js rounds up but that is not wanted since McGill rounds down
     pGPAContainer.innerHTML = pGPA;
+    console.log("[New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
   }
 }
