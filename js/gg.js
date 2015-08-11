@@ -248,21 +248,23 @@ gg.updatePGPA = function(courseCredits,grade,course)
   //if this value '--' is received, remove the previous courses grade contribution from the total
   if(isNaN(grade))
   {
-    console.log("[*Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
+//    console.log("[*Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
     var courseContribution = gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits;
     gg.transcript.points -= courseContribution;
     gg.transcript.gpaCreds -= gg.projectedGrades[course].credits;
     pGPA = ((gg.transcript.points/gg.transcript.gpaCreds) - 0.01).toFixed(2) ;//subtracting 0.01 b/c js rounds up but that is not wanted since McGill rounds down
     pGPAContainer.innerHTML = pGPA;
     gg.projectedGrades[course].gradeValue = grade;
-    console.log("[*New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
+//    console.log("[*New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
   }
   
   else
   {
-    console.log("[Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
-    if(gg.projectedGrades[course].gradeValue)
+//    console.log("[Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
+    if(typeof gg.projectedGrades[course].gradeValue === 'number'
+       && gg.projectedGrades[course].gradeValue >= 0)
     {
+      console.log(gg.projectedGrades[course].gradeValue);
       //if the course had a previous grade then remove that contribution
       var courseContribution = gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits;
     gg.transcript.points -= courseContribution;
@@ -273,6 +275,6 @@ gg.updatePGPA = function(courseCredits,grade,course)
     gg.transcript.gpaCreds += gg.projectedGrades[course].credits;
     pGPA = ((gg.transcript.points/gg.transcript.gpaCreds) - 0.01).toFixed(2); //subtracting 0.01 b/c js rounds up but that is not wanted since McGill rounds down
     pGPAContainer.innerHTML = pGPA;
-    console.log("[New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
+//    console.log("[New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
   }
 }
