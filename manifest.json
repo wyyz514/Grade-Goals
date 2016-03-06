@@ -1,7 +1,7 @@
 {
     "name":"Grade-Goals",
     "description":"A Chrome extension which simplifies the task of setting target grade goals for your courses. McGill exclusive",
-    "version":"0.1.0",
+    "version":"0.1.1",
     "manifest_version":2,
     "page_action":{
         "default_icon":"img/logo.png",

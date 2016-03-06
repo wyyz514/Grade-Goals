@@ -26,7 +26,7 @@ gg.parseTranscript = function(){
     gg.startMarker = trParent;
     var jumbledInfo = infoContainer.innerText;
     var splitInfo = jumbledInfo.match(/[a-z A-Z:0-9\.]+/g);
-    //some hardcoding 
+    //some hardcoding
     //from the back of the array since those values are not labelled
     details.points = splitInfo.pop();
     details.gpaCreds = splitInfo.pop();
@@ -44,15 +44,15 @@ gg.setSemesters = function(){
     var promise = new Promise(function(resolve,reject){
       var currRow = gg.startMarker;
       var foundSemester = false;
-      while(currRow.nextElementSibling !== gg.endMarker)
+      while(currRow && currRow.nextElementSibling !== gg.endMarker)
       {
-          if(currRow.innerText.match(/winter/i) 
+          if(currRow.innerText.match(/winter/i)
              || currRow.innerText.match(/fall/i)
-             ||currRow.innerText.match(/summer/i) 
+             ||currRow.innerText.match(/summer/i)
              && currRow !== gg.startMarker)
           {
                //&nbsp causes problems when selecting using attribute. Removing it using whitespace regex
-              var _sem = currRow.innerText.split(/\s/); 
+              var _sem = currRow.innerText.split(/\s/);
               var sem = _sem.join("_");
               currRow.setAttribute("gg-semester",sem);
               currRow.classList.add("gg-sem");
@@ -130,7 +130,7 @@ gg.populateWithCourses = function(msg){
   //initialize both types of GPA to current cGPA value
   ggContainer.querySelector(".gg-gpa #cgpa").innerHTML = gg.transcript.cumGPA;
   ggContainer.querySelector(".gg-gpa #pgpa").innerHTML = gg.transcript.cumGPA;
-  var rowTemplate =  
+  var rowTemplate =
         "<div class=\"gg-divider\"></div>"
         +"<div class=\"gg-grade\">"
           +"<select class=\"gg-select\">"
@@ -175,7 +175,7 @@ gg.populateWithCourses = function(msg){
     row.setAttribute("credits",gg.courses[index].credits);
     var divider = row.querySelector("div.gg-divider");
     row.insertBefore(classInfo,divider);
-    
+
     var logo = document.querySelector(".gg-logo #bordr");
   }
   //add listener to select tags
@@ -192,7 +192,7 @@ gg.populateWithCourses = function(msg){
       });
     })(index);
   }
-  
+
   logo.addEventListener("click",function(e){
     var el = e.target.parentElement;
     var ggContainer = document.querySelector("div#gg");
@@ -257,14 +257,13 @@ gg.updatePGPA = function(courseCredits,grade,course)
     gg.projectedGrades[course].gradeValue = grade;
 //    console.log("[*New]","Course:",course," Grade:",grade," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
   }
-  
+
   else
   {
 //    console.log("[Previous]","Course:",course," Grade:",gg.projectedGrades[course].gradeValue," Points:",gg.transcript.points," GPA Credits: ",gg.transcript.gpaCreds);
     if(typeof gg.projectedGrades[course].gradeValue === 'number'
        && gg.projectedGrades[course].gradeValue >= 0)
     {
-      console.log(gg.projectedGrades[course].gradeValue);
       //if the course had a previous grade then remove that contribution
       var courseContribution = gg.projectedGrades[course].gradeValue * gg.projectedGrades[course].credits;
     gg.transcript.points -= courseContribution;
